@@ -162,6 +162,27 @@ def delete_produto(id):
         return Response(json.dumps(pedido_removido), status=200)
 
 
+@app.route('/pedido/<int:id>')
+def get_produto(id):
+    try:
+        dados_pedidos = le_arquivo_pedidos()  
+    except FileNotFoundError:
+            return Response(json.dumps({'Erro': 'O arquivo não foi encontrado!'}),
+                            status=404)
+
+    pedido_consultado = {}  
+    for pedido in dados_pedidos['pedidos']:
+        if pedido is not None and pedido['id'] == id:
+            pedido_consultado = pedido
+            break
+
+    if not pedido_consultado:
+        return Response(json.dumps({'Erro': 'Não foi encontrado um pedido com o id informado!'}), 
+                                    status=404)
+
+    return Response(json.dumps(pedido_consultado), status=200)
+
+
 @app.route('/')
 def welcome():
     return "<p>Welcome to the delivery API</p>"
