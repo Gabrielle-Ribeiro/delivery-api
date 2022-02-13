@@ -97,6 +97,41 @@ def put_produto(id, cliente, produto, valor, entregue):
                         status=200)
 
 
+@app.route('/atualizarstatus/<int:id>/<entregue>', methods=['PUT', 'GET'])
+def put_status_pedido(id, entregue):
+    try:
+        dados_pedidos = le_arquivo_pedidos()  
+    except FileNotFoundError:
+            return Response(json.dumps({'Erro': 'O arquivo não foi encontrado!'}),
+                            status=404)
+        
+    if entregue.lower() == 'true':
+        entregue = True
+    else:
+        entregue = False
+
+    pedido_atualizado = {}
+    for pedido in dados_pedidos['pedidos']:
+        if pedido is not None and pedido['id'] == id:
+            pedido['entregue'] = entregue
+            pedido_atualizado = pedido
+            break
+
+    if not pedido_atualizado:
+        return Response(json.dumps({'Erro': 'Nao foi encontrado um pedido com o id informado!'}), 
+                        status=404)
+    
+    try:
+        with open(ARQUIVO_PEDIDOS, 'r+') as arquivo_pedidos:
+            json.dump(dados_pedidos, arquivo_pedidos, indent=4)
+            arquivo_pedidos.truncate()
+    except:
+        return Response(json.dumps({'Erro': 'Não foi possível salvar a alteração!'}),
+                        status=500)
+    else:
+        return Response(json.dumps(pedido_atualizado), status=200)
+
+
 @app.route('/')
 def welcome():
     return "<p>Welcome to the delivery API</p>"
