@@ -118,7 +118,7 @@ def put_status_pedido(id, entregue):
             break
 
     if not pedido_atualizado:
-        return Response(json.dumps({'Erro': 'Nao foi encontrado um pedido com o id informado!'}), 
+        return Response(json.dumps({'Erro': 'Não foi encontrado um pedido com o id informado!'}), 
                         status=404)
     
     try:
@@ -130,6 +130,36 @@ def put_status_pedido(id, entregue):
                         status=500)
     else:
         return Response(json.dumps(pedido_atualizado), status=200)
+
+
+@app.route('/excluirpedido/<int:id>', methods=['DELETE', 'GET'])          
+def delete_produto(id):
+    try:
+        dados_pedidos = le_arquivo_pedidos()  
+    except FileNotFoundError:
+            return Response(json.dumps({'Erro': 'O arquivo não foi encontrado!'}),
+                            status=404)
+
+    pedido_removido = {}
+    for pedido in dados_pedidos['pedidos']:
+        if pedido is not None and pedido['id'] == id:
+            pedido_removido = pedido
+            dados_pedidos['pedidos'].remove(pedido)
+            break
+        
+    if not pedido_removido:
+        return Response(json.dumps({'Erro': 'Não foi encontrado um pedido com o id informado!'}), 
+                                    status=404)
+
+    try:
+        with open(ARQUIVO_PEDIDOS, 'r+') as arquivo_pedidos:
+            json.dump(dados_pedidos, arquivo_pedidos, indent=4)
+            arquivo_pedidos.truncate()
+    except:
+        return Response(json.dumps({'Erro': 'Não foi possível excluir o pedido!'}),
+                        status=500)
+    else:
+        return Response(json.dumps(pedido_removido), status=200)
 
 
 @app.route('/')
