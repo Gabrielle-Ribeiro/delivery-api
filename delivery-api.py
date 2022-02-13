@@ -15,6 +15,12 @@ def le_arquivo_pedidos():
         dados_pedidos = json.load(arquivo_pedidos)  
     return dados_pedidos
 
+def verifica_existencia_produto(produto, pedidos):
+    for pedido in pedidos:
+        if pedido is not None and produto == pedido['produto']:
+            return True
+    return False
+
 
 @app.route('/criarpedido/<string:cliente>/<string:produto>/<float:valor>', methods=['POST', 'GET'])
 def post_pedido(cliente, produto, valor):
@@ -22,7 +28,7 @@ def post_pedido(cliente, produto, valor):
         dados_pedidos = le_arquivo_pedidos()
     except FileNotFoundError:
         return Response(json.dumps({'Erro': 'O arquivo não foi encontrado!'}),
-                                    status=404)
+                        status=404)
 
     id = dados_pedidos['nextId']
     next_id = id + 1
@@ -47,9 +53,48 @@ def post_pedido(cliente, produto, valor):
             arquivo_pedidos.truncate()                 
     except:
         return Response(json.dumps({'Erro': 'Não foi possível salvar o novo pedido!'}),
-                                    status=500)
+                        status=500)
     else:
         return Response(json.dumps(novo_pedido, indent=4), status=200)
+
+
+@app.route('/atualizarpedido/<int:id>/<string:cliente>/<string:produto>/<float:valor>/<entregue>', 
+            methods=['PUT', 'GET'])
+def put_produto(id, cliente, produto, valor, entregue):
+    try:
+        dados_pedidos = le_arquivo_pedidos()  
+    except FileNotFoundError:
+            return Response(json.dumps({'Erro': 'O arquivo não foi encontrado!'}),
+                            status=404)
+
+    if not verifica_existencia_produto(produto, dados_pedidos['pedidos']):
+        return Response(json.dumps({'Erro': 'O produto informado não existe!'}),
+                        status=404)
+
+    pedido_atualizado = {}
+    for pedido in dados_pedidos['pedidos']:
+        if pedido is not None and pedido['id'] == id:       
+            pedido['produto'] = produto
+            pedido['cliente'] = cliente
+            pedido['valor'] = valor
+            pedido['entregue'] = entregue
+            pedido_atualizado = pedido
+            break
+
+    if not pedido_atualizado:
+        return Response(json.dumps({'Erro': 'Não foi encontrado um pedido com o id informado!'}), 
+                        status=404)
+
+    try:
+        with open(ARQUIVO_PEDIDOS , 'r+') as arquivo_pedidos:
+            json.dump(dados_pedidos, arquivo_pedidos, indent=4)
+            arquivo_pedidos.truncate()
+    except:
+        return Response(json.dumps({'Erro': 'Não foi possível salvar as alterações.'}),
+                        status=500)
+    else:
+        return Response(json.dumps(pedido_atualizado, indent=4),
+                        status=200)
 
 
 @app.route('/')
