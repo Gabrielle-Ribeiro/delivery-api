@@ -200,6 +200,22 @@ def get_pedidos_cliente(cliente):
     return Response(json.dumps({'total': total_pedidos}), status=200)
 
 
+@app.route('/totalpedidos/<string:produto>')
+def get_total_produto(produto):
+    try:
+        dados_pedidos = le_arquivo_pedidos()  
+    except FileNotFoundError:
+            return Response(json.dumps({'Erro': 'O arquivo não foi encontrado!'}),
+                            status=404)
+
+    total = 0.0
+    for pedido in dados_pedidos['pedidos']:
+        if pedido is not None and pedido['produto'] == produto and pedido['entregue'] == True:
+            total += pedido['valor']
+    
+    return Response(json.dumps({'total': total}), status=200)
+
+
 
 @app.route('/')
 def welcome():
