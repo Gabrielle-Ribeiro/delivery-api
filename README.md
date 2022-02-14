@@ -48,7 +48,8 @@ Para rodar a Delivery API no seu computador você precisa:
   
 ## Endpoints da Delivery API
   
-Para acessar os endpoints dessa API, basta digitar em seu navegador a porta informada na etapa anterior + alguma rota entre as apresentadas a seguir. <br>
+Para acessar os endpoints dessa API, basta digitar em seu navegador a porta informada na etapa anterior seguida de alguma rota entre as apresentadas a seguir. <br>
+*Exemplo:* ```http://172.21.0.2:5000/produtosmaisvendidos```
 
 **Atenção:** Para parâmetros que em sua escrita possuem espaços entre palavras, basta substituir o parâmetro com espaço entre palavras ou substituindo o espaço por %20. <br> *Exemplo:* para substituir um parâmetro produto por Camarão Internacional, basta escrever na rota ```Camarão Internacional``` ou ```Camarão%20Internacional```.
   
@@ -66,6 +67,9 @@ Parâmetros:
 
 Retorno:
 - Retorna um json com o pedido criado.
+
+Exemplo:
+```http://172.21.0.2:5000/criarpedido/Maria%20da%20Silva/Camarão%20Internacional/180.0```
   
 ### Endpoint para atualizar um pedido
 Rota: 
@@ -83,6 +87,9 @@ Parâmetros:
 Retorno:
 - Retorna um json com o pedido atualizado.
 
+Exemplo:
+```http://172.21.0.2:5000/atualizarpedido/503/Mariana%20da%20Silva/Camarão%20Internacional/200.0/false```
+
 ### Endpoint para atualizar o status de entrega de um pedido
 Rota: 
 ```
@@ -95,7 +102,11 @@ Parâmetros:
   
 Retorno:
 - Retorna um json com o pedido atualizado.
-  
+
+Exemplo:
+```http://172.21.0.2:5000/atualizarstatus/503/true```
+
+
 ### Endpoint para excluir um pedido
 Rota: 
 ```
@@ -107,6 +118,10 @@ Parâmetros:
 
 Retorno:
 - Retorna um json com o pedido excluído.
+
+Exemplo:
+```http://172.21.0.2:5000/excluirpedido/503```
+
   
 ### Endpoint para consultar um pedido em específico
 Rota:
@@ -120,6 +135,11 @@ Parâmetros:
 Retorno:
 - Retorna um json com o pedido solicitado.
   
+
+Exemplo:
+```http://172.21.0.2:5000/pedido/500``` 
+ 
+ 
 ### Endpoint para consultar o valor total de pedidos já realizados por um mesmo cliente
 Rota:
 ```
@@ -131,6 +151,10 @@ Parâmetros:
 
 Retorno:
 - Retorna um json com o valor total de pedidos realizados pelo cliente.
+
+Exemplo:
+```http://172.21.0.2:5000/pedidoscliente/Luana%20Teves``` 
+
 
 ### Endpoint para consultar o valor total de pedidos já realizados para um determinado produto
 Rota:
@@ -144,6 +168,9 @@ Parâmetros:
 Retorno:
 - Retorna um json com o valor total de pedidos realizados para o produto informado.
  
+Exemplo:
+```http://172.21.0.2:5000/totalpedidos/Camarão%20Internacional``` 
+
  
 ### Endpoint para retornar os produtos mais vendidos e a quantidade de vezes em que estes foram pedidos
 Rota:
@@ -157,3 +184,5 @@ Parâmetros:
 Retorno:
 - Retorna um json com o os produtos mais vendidos e suas quantidades em ordem decrescente.
  
+Exemplo:
+```http://172.21.0.2:5000/produtosmaisvendidos``` 
