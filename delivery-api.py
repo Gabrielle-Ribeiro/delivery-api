@@ -183,6 +183,24 @@ def get_produto(id):
     return Response(json.dumps(pedido_consultado), status=200)
 
 
+@app.route('/pedidoscliente/<string:cliente>')
+def get_pedidos_cliente(cliente):
+    try:
+        dados_pedidos = le_arquivo_pedidos()  
+    except FileNotFoundError:
+            return Response(json.dumps({'Erro': 'O arquivo não foi encontrado!'}),
+                            status=404)
+    
+    total_pedidos = 0.0
+    for pedido in dados_pedidos['pedidos']:
+        if pedido is not None and 'cliente' in pedido:
+            if pedido['cliente'] == cliente and pedido['entregue'] == True:
+                total_pedidos += pedido['valor']
+    
+    return Response(json.dumps({'total': total_pedidos}), status=200)
+
+
+
 @app.route('/')
 def welcome():
     return "<p>Welcome to the delivery API</p>"
