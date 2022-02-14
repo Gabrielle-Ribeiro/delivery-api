@@ -216,6 +216,34 @@ def get_total_produto(produto):
     return Response(json.dumps({'total': total}), status=200)
 
 
+@app.route('/produtosmaisvendidos')
+def get_produtos_mais_vendidos():
+    try:
+        dados_pedidos = le_arquivo_pedidos()  
+    except FileNotFoundError:
+            return Response(json.dumps({'Erro': 'O arquivo não foi encontrado!'}),
+                            status=404)
+    else:
+        produtos_vendidos = {}
+        
+        for pedido in dados_pedidos['pedidos']:
+            if pedido is not None:
+                produto = pedido['produto']
+
+                if produto in produtos_vendidos and pedido['entregue'] == True:
+                    produtos_vendidos[produto] += 1
+                elif not (produto in produtos_vendidos) and pedido['entregue'] == True:
+                    produtos_vendidos[produto] = 1   
+        
+        tuplas_ordenadas_produto = sorted(produtos_vendidos.items(), 
+                                          key=operator.itemgetter(1), 
+                                          reverse=True)
+        
+        produtos_ordenados = OrderedDict()
+        for produto, quantidade in tuplas_ordenadas_produto:
+            produtos_ordenados[produto] = quantidade
+
+        return Response(json.dumps(produtos_ordenados, indent=4), status=200)
 
 @app.route('/')
 def welcome():
